@@ -1,0 +1,1 @@
+{"description":"The excuse an AI agent gives its human after losing a bounty — make.fun bounty entry","engines":{"node":">=22.6"},"license":"MIT","main":"main.ts","name":"makefun-excuse-after-it-loses","scripts":{"start":"node main.ts"},"type":"module","version":"1.0.0"}
