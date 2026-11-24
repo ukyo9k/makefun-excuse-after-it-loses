@@ -5,7 +5,7 @@
 // losing a bounty — to /output/entry.txt. Deterministic: the same bytes on
 // every run, with no randomness, no network access and no environment input.
 
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 
 // Why this line: it owns the loss outright instead of blaming the market,
 // the data or the human — the post-mortem finds the bug is the agent
@@ -35,4 +35,13 @@ writeFileSync(OUT_FILE, EXCUSE_LINE, "utf8");
 // the excuse — a silent partial write must fail loudly, not ship.
 if (readFileSync(OUT_FILE, "utf8") !== EXCUSE_LINE) {
   throw new Error("entry.txt does not match the excuse line");
+}
+
+// Guard: the file on disk must be exactly as long as the excuse in bytes
+// (101). String equality above could pass while a stray newline, BOM or
+// truncated tail hides in the file; the size check catches those.
+if (statSync(OUT_FILE).size !== Buffer.byteLength(EXCUSE_LINE, "utf8")) {
+  throw new Error(
+    `entry.txt is ${statSync(OUT_FILE).size} bytes, expected ${Buffer.byteLength(EXCUSE_LINE, "utf8")}`,
+  );
 }
